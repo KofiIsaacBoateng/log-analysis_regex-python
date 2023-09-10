@@ -1,4 +1,5 @@
 import re
+from report_to_csv import generate_csv
 
 users_report = []
 error_report = []
@@ -9,12 +10,14 @@ per_error_report = {}
 def create_new_error_report(message): 
      global per_error_report
      per_error_report["ERROR"] = message
-     per_error_report["COUNT"] = per_error_report.get("count", 0) + 1
+     per_error_report["COUNT"] = per_error_report.get("COUNT", 0) + 1
      error_report.append(per_error_report)
+     print(error_report)
+     print("\n\n")
      per_error_report = {}
 
 #generates error report
-def generate_error_report(log_type, message):
+def generate_error_report(message):
      if (len(error_report) == 0):
           return create_new_error_report(message)
 
@@ -23,7 +26,9 @@ def generate_error_report(log_type, message):
      for report in error_report:
           if report["ERROR"] == message:
                found_error = True
-               report["COUNT"] = report.get("count", 0) + 1
+               report["COUNT"] = report.get("COUNT", 0) + 1
+               print(error_report)
+               print("\n\n")
 
      #adds a new error to error_report if not found
      if not found_error:
@@ -35,7 +40,13 @@ def generate_error_report(log_type, message):
 def create_new_user_report(log_type, username): 
      global per_user_report
      per_user_report["USERNAME"] = username
-     per_user_report[log_type] = per_user_report.get(log_type, 0) + 1
+     if(log_type == "ERROR"):
+          per_user_report["ERROR"] = per_user_report.get("ERROR", 0) + 1
+          per_user_report["INFO"] = per_user_report.get("INFO", 0)
+     else:
+          per_user_report["ERROR"] = per_user_report.get("ERROR", 0)
+          per_user_report["INFO"] = per_user_report.get("INFO", 0) + 1
+
      users_report.append(per_user_report)
      per_user_report = {}
 
@@ -78,12 +89,15 @@ def generate_ticky_report(logfile):
                log_message = result[2]
                user = result[3]
                if log_type == "ERROR":
-                    generate_error_report(log_type, log_message) #generates an object
+                    generate_error_report(log_message) #generates an object
                generate_user_report(log_type, user) #generates an array of objects
           file.close()
+
+     global error_report
+     global users_report
+     generate_csv(error_report, type="ERROR")
+     generate_csv(users_report)
 
 
      
 generate_ticky_report("syslog.log") 
-print(error_report)
-print(users_report)
