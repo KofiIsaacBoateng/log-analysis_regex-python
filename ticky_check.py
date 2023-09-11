@@ -71,6 +71,9 @@ def generate_user_report(log_type, username):
 
 
 def generate_ticky_report(logfile):
+     global error_report
+     global users_report
+
      with open(logfile, "r") as file:
           ###
            # Logfile format 
@@ -93,8 +96,9 @@ def generate_ticky_report(logfile):
                generate_user_report(log_type, user) #generates an array of objects
           file.close()
 
-     global error_report
-     global users_report
+     users_report.sort(key=lambda x: x['USERNAME'])
+     error_report.sort(key=lambda x: x['COUNT'], reverse=True)
+     
      generate_csv(error_report, type="ERROR")
      generate_csv(users_report)
 

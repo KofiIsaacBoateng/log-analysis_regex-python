@@ -1,4 +1,4 @@
-import csv 
+import csv  
 
 
 def generate_csv(report, type=""):
