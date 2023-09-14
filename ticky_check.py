@@ -9,11 +9,9 @@ per_error_report = {}
 #Creates a new error report and appends it to the overall error report array
 def create_new_error_report(message): 
      global per_error_report
-     per_error_report["ERROR"] = message
-     per_error_report["COUNT"] = per_error_report.get("COUNT", 0) + 1
+     per_error_report["Error"] = message
+     per_error_report["Count"] = per_error_report.get("Count", 0) + 1
      error_report.append(per_error_report)
-     print(error_report)
-     print("\n\n")
      per_error_report = {}
 
 #generates error report
@@ -24,11 +22,9 @@ def generate_error_report(message):
      found_error = False
      #updates an error's report if found in the error_report array
      for report in error_report:
-          if report["ERROR"] == message:
+          if report["Error"] == message:
                found_error = True
-               report["COUNT"] = report.get("COUNT", 0) + 1
-               print(error_report)
-               print("\n\n")
+               report["Count"] = report.get("Count", 0) + 1
 
      #adds a new error to error_report if not found
      if not found_error:
@@ -39,7 +35,7 @@ def generate_error_report(message):
 #Creates a new user report and appends it to the overall users report array
 def create_new_user_report(log_type, username): 
      global per_user_report
-     per_user_report["USERNAME"] = username
+     per_user_report["Username"] = username
      if(log_type == "ERROR"):
           per_user_report["ERROR"] = per_user_report.get("ERROR", 0) + 1
           per_user_report["INFO"] = per_user_report.get("INFO", 0)
@@ -59,7 +55,7 @@ def generate_user_report(log_type, username):
      found_user = False
      #updates a users report if found in the users_report array
      for report in users_report:
-          if report["USERNAME"] == username:
+          if report["Username"] == username:
                found_user = True
                report[log_type] = report.get(log_type, 0) + 1
 
@@ -80,7 +76,7 @@ def generate_ticky_report(logfile):
            # ERROR: <Jan 31 18:43:01 ubuntu.local ticky: ERROR Ticket doesn't exist (nonummy)>
            # INFO:  <Jan 31 17:51:52 ubuntu.local ticky: INFO Closed ticket [#8604] (mcintosh)>
           ###
-          pattern = r"\s([A-Z]+)\s(.+)\s\(([a-z\.]+)\)"
+          pattern = r"ticky:\s([A-Z]+)\s([a-zA-Z\s]+).*\s\(([a-z\.]+)\)"
           for line in file:
                if ("INFO" not in line) and ("ERROR" not in line):
                     # print("Skipped line: {}".format(line))
@@ -96,8 +92,8 @@ def generate_ticky_report(logfile):
                generate_user_report(log_type, user) #generates an array of objects
           file.close()
 
-     users_report.sort(key=lambda x: x['USERNAME'])
-     error_report.sort(key=lambda x: x['COUNT'], reverse=True)
+     users_report.sort(key=lambda x: x['Username'])
+     error_report.sort(key=lambda x: x['Count'], reverse=True)
      
      generate_csv(error_report, type="ERROR")
      generate_csv(users_report)
